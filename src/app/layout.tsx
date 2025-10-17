@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
+import { BackgroundGlow } from "@/components/backgroundGlow";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -26,9 +27,15 @@ export default function RootLayout({
     return (
         <html lang="de">
         <body
-            className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[#0a0a0a] text-white antialiased`}
+            className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[#0a0a0a] text-white antialiased relative overflow-x-hidden`}
         >
+        {/* 👇 Glow unter allem */}
+        <BackgroundGlow />
+
+        {/* Navbar bleibt darüber */}
         <Navbar />
+
+        {/* Hauptinhalt */}
         <main className="flex flex-col items-center px-6 py-16 max-w-6xl mx-auto">
             {children}
         </main>
