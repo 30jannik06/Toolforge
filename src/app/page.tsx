@@ -55,20 +55,34 @@ export default function HomePage() {
                 {tools.map((tool, i) => (
                     <Link key={i} href={tool.href}>
                         <motion.div
-                            whileHover={{
-                                scale: 1.04,
-                                y: -4,
-                                boxShadow: "0 0 25px rgba(59,130,246,0.25)",
-                            }}
+                            className="relative cursor-pointer bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-6 flex flex-col items-center gap-4 text-center hover:bg-white/10 transition"
+                            whileHover={{ scale: 1.04 }}
                             whileTap={{ scale: 0.97 }}
-                            transition={{ type: "spring", stiffness: 200 }}
-                            className="cursor-pointer bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-6 flex flex-col items-center gap-4 text-center hover:bg-white/10 transition"
+                            onMouseMove={(e) => {
+                                const card = e.currentTarget;
+                                const rect = card.getBoundingClientRect();
+                                const x = e.clientX - rect.left;
+                                const y = e.clientY - rect.top;
+                                const rotateY = ((x - rect.width / 2) / rect.width) * 10; // max 10°
+                                const rotateX = ((y - rect.height / 2) / rect.height) * -10;
+                                card.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg) scale(1.04)`;
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "rotateY(0deg) rotateX(0deg) scale(1)";
+                            }}
+                            style={{
+                                transition: "transform 0.2s ease-out",
+                                transformStyle: "preserve-3d",
+                            }}
                         >
                             {tool.icon}
                             <h2 className="text-xl font-semibold">{tool.title}</h2>
                             <p className="text-gray-400 text-sm leading-relaxed">
                                 {tool.description}
                             </p>
+
+                            {/* Optional: weicher Lichtreflex */}
+                            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-white/10 to-transparent opacity-0 hover:opacity-20 transition-opacity duration-300" />
                         </motion.div>
                     </Link>
                 ))}
