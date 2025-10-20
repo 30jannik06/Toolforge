@@ -63,7 +63,7 @@ export default function HomePage() {
                                 const rect = card.getBoundingClientRect();
                                 const x = e.clientX - rect.left;
                                 const y = e.clientY - rect.top;
-                                const rotateY = ((x - rect.width / 2) / rect.width) * 10; // max 10°
+                                const rotateY = ((x - rect.width / 2) / rect.width) * 10;
                                 const rotateX = ((y - rect.height / 2) / rect.height) * -10;
                                 card.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg) scale(1.04)`;
                             }}
