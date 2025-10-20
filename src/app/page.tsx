@@ -2,7 +2,8 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { QrCode, Type, Upload, Scissors } from "lucide-react";
+import {QrCode, Type, Upload, Scissors, Wrench} from "lucide-react";
+import React from "react";
 
 export default function HomePage() {
     const tools = [
@@ -10,7 +11,7 @@ export default function HomePage() {
             title: "QR Generator",
             description: "Erstelle QR-Codes aus Text oder Links.",
             icon: <QrCode className="w-8 h-8 text-blue-400" />,
-            href: "/tools/qr-generator",
+            href: "/tools/qr",
         },
         {
             title: "Text Formatter",
@@ -30,6 +31,18 @@ export default function HomePage() {
             icon: <Scissors className="w-8 h-8 text-blue-400" />,
             href: "/tools/url-shortener",
         },
+        {
+            title: "Base64 Text Converter",
+            description: "Konvertiere Texte in Base64 und umgekehrt.",
+            icon: <Wrench className="w-8 h-8 text-blue-400" />,
+            href: "/tools/base64-text",
+        },
+        {
+            title: "Base64 Image Converter",
+            description: "Konvertiere Bilder in Base64 und umgekehrt.",
+            icon: <Wrench className="w-8 h-8 text-blue-400" />,
+            href: "/tools/base64-image",
+        }
     ];
 
     return (
