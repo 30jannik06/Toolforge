@@ -8,9 +8,9 @@ import { Wrench, Type, QrCode, Scissors, Upload } from "lucide-react";
 const tools = [
     {
         name: "QR Generator",
-        description: "Erstelle QR-Codes aus Text oder Links.",
+        description: "Erstelle QR-Codes aus Text, Links und vielem mehr.",
         icon: <QrCode className="w-6 h-6 text-blue-400" />,
-        href: "/tools/qr-generator",
+        href: "/tools/qr",
     },
     {
         name: "Text Formatter",
@@ -30,6 +30,18 @@ const tools = [
         icon: <Scissors className="w-6 h-6 text-blue-400" />,
         href: "/tools/url-shortener",
     },
+    {
+        name: "Base64 Text Converter",
+        description: "Konvertiere Texte in Base64 und umgekehrt.",
+        icon: <Wrench className="w-6 h-6 text-blue-400" />,
+        href: "/tools/base64-text",
+    },
+    {
+        name: "Base64 Image Converter",
+        description: "Konvertiere Bilder in Base64 und umgekehrt.",
+        icon: <Wrench className="w-6 h-6 text-blue-400" />,
+        href: "/tools/base64-image",
+    }
 ];
 
 const ToolsPage: React.FC = () => {
