@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import QRCode from "react-qr-code";
-import {copyQrAsBase64, downloadQrAsPng} from "@/lib/qrUtilis";
+import {copyQrAsBase64, downloadQrAsPng, shareQr} from "@/lib/qrUtilis";
 
 export default function QRTextTool() {
     const [text, setText] = useState("");
@@ -62,6 +62,12 @@ export default function QRTextTool() {
                             className="bg-blue-500 hover:bg-blue-600 px-4 py-1 rounded-lg text-sm font-semibold transition"
                         >
                             💾 Download PNG
+                        </button>
+                        <button
+                            onClick={() => shareQr("wifi-qr.png")}
+                            className="bg-green-500 hover:bg-green-600 px-4 py-1 rounded-lg text-sm font-semibold transition"
+                        >
+                            📤 Teilen
                         </button>
                     </div>
                 </motion.div>
