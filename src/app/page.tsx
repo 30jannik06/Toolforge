@@ -9,7 +9,7 @@ export default function HomePage() {
     const tools = [
         {
             title: "QR Generator",
-            description: "Erstelle QR-Codes aus Text oder Links.",
+            description: "Erstelle QR-Codes aus Text, Links und vielem mehr.",
             icon: <QrCode className="w-8 h-8 text-blue-400" />,
             href: "/tools/qr",
         },
