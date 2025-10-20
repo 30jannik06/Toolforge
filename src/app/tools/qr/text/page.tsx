@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import QRCode from "react-qr-code";
+import {copyQrAsBase64, downloadQrAsPng} from "@/lib/qrUtilis";
 
 export default function QRTextTool() {
     const [text, setText] = useState("");
@@ -12,64 +13,6 @@ export default function QRTextTool() {
     const handleGenerate = () => {
         if (!text.trim()) return;
         setQrValue(text.trim());
-    };
-
-    const handleCopyBase64 = async () => {
-        try {
-            const canvas = document.createElement("canvas");
-            const svg = document.querySelector("svg");
-            if (!svg) return alert("Kein QR-Code gefunden");
-
-            // SVG in Canvas konvertieren
-            const xml = new XMLSerializer().serializeToString(svg);
-            const svg64 = btoa(unescape(encodeURIComponent(xml)));
-            const image64 = `data:image/svg+xml;base64,${svg64}`;
-
-            const img = new Image();
-            img.src = image64;
-            await new Promise((res) => (img.onload = res));
-
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext("2d");
-            ctx?.drawImage(img, 0, 0);
-
-            const pngUrl = canvas.toDataURL("image/png");
-            await navigator.clipboard.writeText(pngUrl);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 1500);
-        } catch {
-            alert("❌ Fehler beim Kopieren als Base64");
-        }
-    };
-
-    const handleDownload = async () => {
-        try {
-            const canvas = document.createElement("canvas");
-            const svg = document.querySelector("svg");
-            if (!svg) return alert("Kein QR-Code gefunden");
-
-            const xml = new XMLSerializer().serializeToString(svg);
-            const svg64 = btoa(unescape(encodeURIComponent(xml)));
-            const image64 = `data:image/svg+xml;base64,${svg64}`;
-
-            const img = new Image();
-            img.src = image64;
-            await new Promise((res) => (img.onload = res));
-
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext("2d");
-            ctx?.drawImage(img, 0, 0);
-
-            const pngUrl = canvas.toDataURL("image/png");
-            const link = document.createElement("a");
-            link.href = pngUrl;
-            link.download = "qr-code.png";
-            link.click();
-        } catch {
-            alert("❌ Fehler beim Download");
-        }
     };
 
     return (
@@ -109,13 +52,13 @@ export default function QRTextTool() {
 
                     <div className="flex gap-4">
                         <button
-                            onClick={handleCopyBase64}
+                            onClick={copyQrAsBase64}
                             className="bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-1 rounded-lg text-sm transition"
                         >
                             {copied ? "✅ Kopiert!" : "📋 Als Base64 kopieren"}
                         </button>
                         <button
-                            onClick={handleDownload}
+                            onClick={() => downloadQrAsPng("wifi-qr.png")}
                             className="bg-blue-500 hover:bg-blue-600 px-4 py-1 rounded-lg text-sm font-semibold transition"
                         >
                             💾 Download PNG
