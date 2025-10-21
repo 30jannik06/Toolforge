@@ -1,11 +1,11 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { signOut, useSession } from "next-auth/react";
-import { useState } from "react";
+import {cn} from "@/lib/utils";
+import {signOut, useSession} from "next-auth/react";
+import {useState} from "react";
 import Link from "next/link";
 
-type NavSection = "dashboard" | "shortlinks" | "feedback";
+type NavSection = "dashboard" | "shortlinks" | "features" | "systemstatus";
 
 export function Sidebar({
                             active,
@@ -24,9 +24,12 @@ export function Sidebar({
 
     return (
         <aside className="fixed top-0 left-0 h-full w-64 bg-white/5 border-r border-white/10 backdrop-blur-md flex flex-col justify-between">
-            {/* Oben: Navigation */}
+            {/* 🔹 Navigation oben */}
             <div className="p-6">
-                <h1 className="text-xl font-bold text-blue-400 mb-8">ToolForge Admin</h1>
+                <h1 className="text-xl font-bold text-blue-400 mb-8">
+                    ToolForge Admin
+                </h1>
+
                 <nav className="flex flex-col gap-2">
                     <SidebarLink
                         label="Dashboard"
@@ -39,14 +42,19 @@ export function Sidebar({
                         onClick={() => setActive("shortlinks")}
                     />
                     <SidebarLink
-                        label="Feedback"
-                        active={active === "feedback"}
-                        onClick={() => setActive("feedback")}
+                        label="Features"
+                        active={active === "features"}
+                        onClick={() => setActive("features")}
+                    />
+                    <SidebarLink
+                        label="Systemstatus"
+                        active={active === "systemstatus"}
+                        onClick={() => setActive("systemstatus")}
                     />
                 </nav>
             </div>
 
-            {/* Unten: Footer-Bereich */}
+            {/* 🔻 Footer-Bereich */}
             <div className="p-6 border-t border-white/10 text-sm flex flex-col gap-3">
                 <Link
                     href="/"
@@ -56,7 +64,7 @@ export function Sidebar({
                 </Link>
 
                 <p className="text-gray-400 mb-1 truncate">
-                    {session?.user?.email ?? "test@toolforge.local"}
+                    {session?.user?.email ?? "admin@toolforge.local"}
                 </p>
 
                 <button
@@ -76,6 +84,7 @@ export function Sidebar({
     );
 }
 
+// 🔸 SidebarLink-Komponente
 function SidebarLink({
                          label,
                          active,
@@ -89,7 +98,7 @@ function SidebarLink({
         <button
             onClick={onClick}
             className={cn(
-                "text-left px-3 py-2 rounded-md transition-colors",
+                "text-left px-3 py-2 rounded-md transition-colors w-full",
                 active
                     ? "bg-blue-500/20 text-blue-400 font-semibold"
                     : "hover:bg-white/10 text-gray-300"
