@@ -1,43 +1,63 @@
-import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt";
+import NextAuth, { type NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaClient, type Role } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
-const db = new PrismaClient();
+const prisma = new PrismaClient();
 
-const handler = NextAuth({
-    adapter: PrismaAdapter(db),
+export const authOptions: NextAuthOptions = {
     providers: [
-        Credentials({
+        CredentialsProvider({
             name: "Credentials",
             credentials: {
-                email: { label: "E-Mail", type: "text" },
+                email: { label: "E-Mail", type: "text", placeholder: "you@example.com" },
                 password: { label: "Passwort", type: "password" },
             },
             async authorize(credentials) {
-                if (!credentials?.email || !credentials.password) return null;
+                // Sicherheitscheck
+                if (!credentials?.email || !credentials?.password) return null;
 
-                const user = await db.user.findUnique({
+                const user = await prisma.user.findUnique({
                     where: { email: credentials.email },
                 });
-
                 if (!user || !user.password) return null;
 
                 const isValid = await bcrypt.compare(credentials.password, user.password);
                 if (!isValid) return null;
 
-                return user;
+                // ✅ explizit Role casten für sauberen Typ
+                return {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role as Role,
+                };
             },
         }),
     ],
-    session: {
-        strategy: "jwt",
+
+    session: { strategy: "jwt" },
+
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                token.role = (user as any).role;
+            }
+            return token;
+        },
+        async session({ session, token }) {
+            if (session.user && token.role) {
+                (session.user as any).role = token.role;
+            }
+            return session;
+        },
     },
-    secret: process.env.NEXTAUTH_SECRET,
+
     pages: {
         signIn: "/login",
     },
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

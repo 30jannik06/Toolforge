@@ -1,33 +1,41 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { signIn, useSession } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Loader2, LockKeyhole } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { UserPlus, Loader2 } from "lucide-react";
 
-export default function LoginPage() {
+export default function RegisterPage() {
     const router = useRouter();
-    const params = useSearchParams();
-    const { data: session } = useSession();
-
-    const unauthorized = params.get("unauthorized");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    const [name, setName] = useState("");
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState(false);
 
-    useEffect(() => {
-        if (session?.user?.role === "ADMIN") router.replace("/admin");
-        else if (session?.user) router.replace("/");
-    }, [session, router]);
-
-    const handleLogin = async () => {
+    const handleRegister = async () => {
         setLoading(true);
-        const res = await signIn("credentials", { redirect: false, email, password });
-        if (res?.error) setError("❌ Falsche Login-Daten 😅");
+        setError("");
+        setSuccess(false);
+
+        const res = await fetch("/api/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password, name }),
+        });
+
+        const data = await res.json();
         setLoading(false);
+
+        if (!res.ok) {
+            setError(data.error || "Registrierung fehlgeschlagen 😕");
+            return;
+        }
+
+        setSuccess(true);
+        setTimeout(() => router.push("/login?registered=true"), 1500);
     };
 
     return (
@@ -45,10 +53,12 @@ export default function LoginPage() {
                 <Link href="/" className="text-2xl font-semibold hover:text-blue-400 transition">
                     ⚙️ ToolForge
                 </Link>
-                <p className="text-gray-400 text-sm mt-1">Willkommen im Systemzugang</p>
+                <p className="text-gray-400 text-sm mt-1">
+                    Dein Zugang zum ToolForge-Universum
+                </p>
             </motion.div>
 
-            {/* --- Login Box --- */}
+            {/* --- Register Box --- */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -56,17 +66,22 @@ export default function LoginPage() {
                 className="flex flex-col items-center gap-6 text-center bg-white/5 border border-white/10 backdrop-blur-2xl rounded-2xl px-10 py-8 shadow-2xl"
             >
                 <div className="flex items-center gap-2 mb-2">
-                    <LockKeyhole className="w-6 h-6 text-blue-400" />
-                    <h1 className="text-2xl font-bold text-blue-400">Anmeldung</h1>
+                    <UserPlus className="w-6 h-6 text-blue-400" />
+                    <h1 className="text-2xl font-bold text-blue-400">Registrieren</h1>
                 </div>
 
-                {unauthorized && (
-                    <p className="text-red-400 text-sm -mt-2">
-                        Keine Berechtigung, auf das Admin-Panel zuzugreifen.
-                    </p>
-                )}
+                <p className="text-gray-400 text-sm -mt-3">
+                    Erstelle dein persönliches ToolForge-Konto
+                </p>
 
                 <div className="flex flex-col gap-4 mt-2">
+                    <input
+                        type="text"
+                        placeholder="Name (optional)"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="bg-white/10 border border-white/20 rounded-lg px-4 py-2 w-64 text-center outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+                    />
                     <input
                         type="email"
                         placeholder="E-Mail"
@@ -81,11 +96,19 @@ export default function LoginPage() {
                         onChange={(e) => setPassword(e.target.value)}
                         className="bg-white/10 border border-white/20 rounded-lg px-4 py-2 w-64 text-center outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
                     />
+
+                    {error && <p className="text-red-400 text-sm">{error}</p>}
+                    {success && (
+                        <p className="text-green-400 text-sm">
+                            ✅ Registrierung erfolgreich! Weiterleitung …
+                        </p>
+                    )}
+
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.97 }}
                         disabled={loading}
-                        onClick={handleLogin}
+                        onClick={handleRegister}
                         className={`${
                             loading
                                 ? "bg-blue-500/40 cursor-not-allowed"
@@ -94,33 +117,29 @@ export default function LoginPage() {
                     >
                         {loading ? (
                             <>
-                                <Loader2 className="w-4 h-4 animate-spin" /> Anmeldung...
+                                <Loader2 className="w-4 h-4 animate-spin" /> Registriere …
                             </>
                         ) : (
-                            "Login"
+                            "Registrieren"
                         )}
                     </motion.button>
-
-                    {error && <p className="text-red-400 text-sm">{error}</p>}
                 </div>
 
-                {/* --- Register Button --- */}
-                <div className="flex flex-col items-center mt-2">
-                    <p className="text-gray-400 text-sm mb-2">Noch kein Konto?</p>
+                {/* --- Footer Links --- */}
+                <div className="flex flex-col items-center mt-4 text-sm">
                     <Link
-                        href="/register"
-                        className="bg-white/10 border border-white/20 hover:bg-blue-500/20 hover:border-blue-500/30 text-blue-400 px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+                        href="/login"
+                        className="text-gray-400 hover:text-blue-400 transition"
                     >
-                        Registrieren
+                        ← Zum Login
+                    </Link>
+                    <Link
+                        href="/"
+                        className="text-gray-400 hover:text-blue-400 transition mt-1"
+                    >
+                        Zurück zur Hauptseite
                     </Link>
                 </div>
-
-                <Link
-                    href="/"
-                    className="text-gray-400 hover:text-blue-400 transition text-sm mt-4"
-                >
-                    ← Zurück zur Hauptseite
-                </Link>
             </motion.div>
         </div>
     );

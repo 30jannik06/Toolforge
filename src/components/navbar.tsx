@@ -16,42 +16,57 @@ export function Navbar() {
     ];
 
     const isActive = (href: string) =>
-        pathname === href ? "text-blue-400 font-medium" : "hover:text-white transition";
+        pathname === href
+            ? "text-blue-400 font-semibold border-b border-blue-500"
+            : "text-gray-300 hover:text-white transition";
+
+    const isAdmin = session?.user?.role === "ADMIN";
 
     return (
         <motion.nav
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="sticky top-0 z-50 w-full backdrop-blur-xl border-b border-white/10 bg-white/5"
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="sticky top-0 z-50 w-full backdrop-blur-xl border-b border-white/10 bg-gradient-to-b from-white/10 to-transparent"
         >
             <div className="max-w-6xl mx-auto flex items-center justify-between p-4">
+                {/* --- Logo --- */}
                 <Link
                     href="/"
-                    className="text-lg font-semibold tracking-wide hover:text-blue-400 transition"
+                    className="text-lg font-semibold tracking-wide hover:text-blue-400 transition flex items-center gap-2"
                 >
-                    ⚙️ ToolForge
+                    ⚙️ <span className="hidden sm:inline">ToolForge</span>
                 </Link>
 
-                <div className="flex items-center gap-6 text-sm text-gray-300">
+                {/* --- Navigation --- */}
+                <div className="flex items-center gap-6 text-sm">
                     {navLinks.map(({ href, label }) => (
                         <Link key={href} href={href} className={isActive(href)}>
                             {label}
                         </Link>
                     ))}
 
-                    {/* Auth Buttons */}
+                    {/* Nur Admins sehen das */}
+                    {isAdmin && (
+                        <Link
+                            href="/admin"
+                            className={`${isActive("/admin")} hover:text-blue-400`}
+                        >
+                            Admin
+                        </Link>
+                    )}
+                </div>
+
+                {/* --- Auth Buttons --- */}
+                <div className="flex items-center gap-4 text-sm">
                     {session ? (
                         <>
-                            <Link
-                                href="/admin"
-                                className={isActive("/admin")}
-                            >
-                                Admin
-                            </Link>
+                            <span className="text-gray-400 hidden sm:inline">
+                                {session.user?.name ?? session.user?.email}
+                            </span>
                             <button
                                 onClick={() => signOut({ callbackUrl: "/" })}
-                                className="text-gray-400 hover:text-red-400 transition"
+                                className="px-3 py-1 rounded-md border border-white/10 hover:border-red-400 hover:text-red-400 transition"
                             >
                                 Logout
                             </button>
@@ -59,7 +74,7 @@ export function Navbar() {
                     ) : (
                         <button
                             onClick={() => signIn()}
-                            className="text-gray-400 hover:text-blue-400 transition"
+                            className="px-3 py-1 rounded-md border border-white/10 hover:border-blue-400 hover:text-blue-400 transition"
                         >
                             Login
                         </button>

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import * as LucideIcons from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 interface Feature {
     id: number;
@@ -32,84 +33,95 @@ const ToolsPage: React.FC = () => {
     }, []);
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="flex flex-col gap-12 mt-10"
-        >
+        <div className="relative min-h-screen w-full text-white flex flex-col items-center overflow-hidden">
+            {/* Hintergrund Glow */}
+            <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-radial from-blue-600/20 via-transparent to-transparent blur-3xl opacity-70" />
+
             {/* Header */}
-            <div className="text-center space-y-4">
-                <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
-                    <span className="text-blue-400">Tools</span> Übersicht
-                </h1>
-                <p className="text-gray-300 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-                    Wähle eines unserer Tools aus, um direkt zu starten. Alles läuft lokal
-                    und ist auf Performance optimiert.
-                </p>
-            </div>
-
-            {/* Grid */}
             <motion.div
-                layout
-                className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
-                transition={{ duration: 0.4 }}
+                initial={{ y: -30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="flex flex-col items-center text-center mb-14 mt-16"
             >
-                {loading
-                    ? // 🦴 Skeletons anzeigen, solange geladen wird
-                    Array.from({ length: 6 }).map((_, i) => (
-                        <motion.div
-                            key={i}
-                            className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-6 animate-pulse"
-                        >
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="w-6 h-6 bg-white/10 rounded-full" />
-                                <div className="w-32 h-4 bg-white/10 rounded" />
-                            </div>
-                            <div className="w-full h-3 bg-white/5 rounded mb-2" />
-                            <div className="w-5/6 h-3 bg-white/5 rounded mb-6" />
-                            <div className="w-20 h-3 bg-blue-400/20 rounded" />
-                        </motion.div>
-                    ))
-                    : // ✅ Echte Daten, wenn geladen
-                    features.map((tool) => {
-                        const Icon =
-                            LucideIcons[
-                            (tool.icon as keyof typeof LucideIcons) || "Wrench"
-                                ] as React.ComponentType<{ className?: string }>;
-
-                        return (
-                            <motion.div
-                                key={tool.id}
-                                whileHover={{ scale: 1.03, y: -3 }}
-                                whileTap={{ scale: 0.98 }}
-                                transition={{ type: "spring", stiffness: 200 }}
-                                className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-6 hover:bg-white/10 transition"
-                            >
-                                <div className="flex items-center gap-3 mb-4">
-                                    <Icon className="w-6 h-6 text-blue-400" />
-                                    <h2 className="text-lg font-semibold text-white">{tool.name}</h2>
-                                </div>
-
-                                <p className="text-gray-400 text-sm leading-relaxed mb-4">
-                                    {tool.description ?? "Keine Beschreibung vorhanden."}
-                                </p>
-
-                                <Link
-                                    href={tool.route ?? "#"}
-                                    className={`inline-flex items-center text-sm font-medium transition ${
-                                        tool.route
-                                            ? "text-blue-400 hover:text-blue-300"
-                                            : "text-gray-500 cursor-not-allowed"
-                                    }`}
-                                >
-                                    {tool.route ? "Öffnen →" : "Demnächst"}
-                                </Link>
-                            </motion.div>
-                        );
-                    })}
+                <h1 className="text-5xl font-extrabold tracking-tight">
+          <span className="text-blue-400 drop-shadow-[0_0_15px_rgba(59,130,246,0.6)]">
+            Tools
+          </span>{" "}
+                    Übersicht
+                </h1>
+                <p className="text-gray-400 max-w-2xl leading-relaxed mt-4">
+                    Wähle eines unserer Tools aus, um direkt zu starten – schnell, lokal
+                    und stilvoll.
+                </p>
             </motion.div>
-        </motion.div>
+
+            {/* Loading Spinner */}
+            {loading && (
+                <div className="flex justify-center items-center min-h-[200px]">
+                    <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
+                </div>
+            )}
+
+            {/* Tool Grid */}
+            {!loading && (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 px-6 max-w-6xl mb-20"
+                >
+                    {features.length > 0 ? (
+                        features.map((tool) => {
+                            const Icon =
+                                LucideIcons[
+                                (tool.icon as keyof typeof LucideIcons) || "Wrench"
+                                    ] as React.ComponentType<{ className?: string }>;
+
+                            return (
+                                <Link key={tool.id} href={tool.route ?? "#"}>
+                                    <motion.div
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.97 }}
+                                        className="relative group bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-start justify-between h-[220px] transition-all duration-300 hover:bg-white/10 hover:shadow-[0_0_20px_rgba(59,130,246,0.25)]"
+                                    >
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <Icon className="w-6 h-6 text-blue-400 drop-shadow-[0_0_6px_rgba(59,130,246,0.5)] transition-transform duration-300 group-hover:rotate-3" />
+                                            <h2 className="text-lg font-semibold text-white">
+                                                {tool.name}
+                                            </h2>
+                                        </div>
+
+                                        <p className="text-gray-400 text-sm leading-relaxed line-clamp-2 mb-4">
+                                            {tool.description ?? "Keine Beschreibung vorhanden."}
+                                        </p>
+
+                                        <div className="flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition">
+                                            {tool.route ? (
+                                                <>
+                                                    Öffnen →
+                                                </>
+                                            ) : (
+                                                <span className="text-gray-500 cursor-not-allowed">
+                          Demnächst
+                        </span>
+                                            )}
+                                        </div>
+
+                                        {/* Glare Effekt */}
+                                        <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+                                    </motion.div>
+                                </Link>
+                            );
+                        })
+                    ) : (
+                        <div className="text-gray-500 text-sm col-span-full text-center">
+                            Keine Tools verfügbar 💤
+                        </div>
+                    )}
+                </motion.div>
+            )}
+        </div>
     );
 };
 
