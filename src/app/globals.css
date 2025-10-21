@@ -126,3 +126,41 @@
 body {
     background: radial-gradient(circle at top, #111 0%, #050505 100%);
 }
+
+
+/* 🖤 Dark Scrollbar (ToolForge clean edition) */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+/* Hintergrund der Scrollbar – tief schwarz */
+::-webkit-scrollbar-track {
+    background: #000; /* kein Grau mehr */
+    border-radius: 10px;
+}
+
+/* Scroll-Thumb – dezentes Schwarz mit Neon-Blue Highlight */
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #1e3a8a 0%, #2563eb 100%);
+    border-radius: 10px;
+    border: 2px solid #000; /* verschmilzt mit Track */
+    box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #2563eb 0%, #3b82f6 100%);
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.6);
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #2563eb #000;
+}
+
+/* Sanftes Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
